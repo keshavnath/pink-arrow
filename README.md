@@ -1,9 +1,9 @@
 # uas-rec
 My Repository for the UAS Software Recruitment Task
 
-**Python-OpenCV Script to detect a _Pink Arrow_ from the webcam feed, and determine the angle from the vertical.**
+**Python-OpenCV Script to detect a Red Arrow_ from the webcam feed, and determine the angle from the vertical.**
 
-> Uses Contours and HSV-Masks to detect Pink Arrows.
+> Uses Contours and HSV-Masks to detect Red Arrows.
 
 > Uses Erosion and Opening Morphology for Noise Reduction.
 
