@@ -5,10 +5,10 @@ pinky=np.uint8([[[255,115,160]]])
 hsv_pinky=cv2.cvtColor(pinky,cv2.COLOR_BGR2HSV)
 #print(hsv_pinky)
 
-lower=np.array([150, 50, 50],np.uint8)
-higher=np.array([170, 255, 255],np.uint8)
+lower=np.array([170, 50, 50],np.uint8)
+higher=np.array([180, 255, 255],np.uint8)
 
-kernel = np.ones((4, 4), np.uint8)
+kernel = np.ones((5, 5), np.uint8)
 
 vid = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
@@ -32,14 +32,6 @@ while (True):
     res=cv2.flip(res,1)
 
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    '''
-    cnt=contours[0]
-    rect=cv2.minAreaRect(cnt)
-    box=cv2.boxPoints(rect)
-    box=np.int0(box)
-    cv2.drawContours(frame,[box],0,(0,0,255),2)
-    '''
 
     for pic, contour in enumerate(contours): 
         area = cv2.contourArea(contour) 
