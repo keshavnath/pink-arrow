@@ -5,8 +5,8 @@ My Repository for the UAS Software Recruitment Task
 
 > Uses Contours and HSV-Masks to detect Pink Arrows.
 
-> Uses Erosion and Opening Moorphology for Noise Reduction.
+> Uses Erosion and Opening Morphology for Noise Reduction.
 
-Draws a circle around the arrow.
+Draws a circle around the arrow and shows Angle from vertical.
 
 _OLD_ - practice1.py -> Practice of rotation and scaling of a template/image
