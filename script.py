@@ -8,7 +8,7 @@ hsv_pinky=cv2.cvtColor(pinky,cv2.COLOR_BGR2HSV)
 lower=np.array([170, 50, 50],np.uint8)
 higher=np.array([180, 255, 255],np.uint8)
 
-kernel = np.ones((5, 5), np.uint8)
+kernel = np.ones((7, 7), np.uint8)
 
 vid = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
@@ -24,6 +24,7 @@ while (True):
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask=cv2.erode(mask, kernel, iterations=1)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
     res = cv2.bitwise_and(frame, frame, mask = mask)
 
@@ -51,8 +52,20 @@ while (True):
             cords,axes,angle = cv2.fitEllipse(contour)
             x,y=cords[:2]
             x,y=int(x),int(y)
+            cv2.putText(frame, f"A={int(angle)}",(x,y), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
             #print(f"X={cords[0]}\nY={cords[1]}\nAngle={angle}\n")
-            cv2.putText(frame, f"A={int(angle)}",(x,y), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0))
+            #print(axes)
+
+            '''
+            rows,cols = frame.shape[:2]
+            [vx,vy,x0,y0] = cv2.fitLine(contour, cv2.DIST_L2,0,0.01,0.01)
+            lefty = int((-x0*vy/vx) + y0)
+            righty = int(((cols-x0)*vy/vx)+y0)
+            cv2.putText(frame, f"LY={lefty}",(x,y+20), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0))
+            cv2.putText(frame, f"RY={righty}",(x,y+40), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0))
+            #frame = cv2.line(frame,(cols-1,righty),(0,lefty),(0,255,0),2)
+            '''
+
             '''
             x, y, w, h = cv2.boundingRect(contour) 
             frame = cv2.rectangle(frame, (x, y),  
@@ -74,3 +87,5 @@ while (True):
         vid.release()
         cv2.destroyAllWindows()
         break
+
+print("FINIT.")
