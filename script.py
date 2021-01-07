@@ -21,8 +21,21 @@ print(hsv_pinky)
 lower=np.array([170, 50, 50],np.uint8)
 higher=np.array([180, 255, 255],np.uint8)
 
+'''
+base=np.array([0,0,100],np.uint8)
+'''
+
+'''
+#Taking template of arrow template
+base_arrow=cv2.imread("arrow.jpg",0)
+ret, thresh = cv2.threshold(base_arrow, 255, 255, 255)
+cnts,h = cv2.findContours(thresh,2,1)
+arrow_template=cnts[0]
+#cv2.imshow("Lmao",base_arrow)
+'''
+
 #A Kernel - 7x7 Pixels was found to be the ideal size for me - Used for Morphology
-kernel = np.ones((7, 7), np.uint8)
+kernel = np.ones((7,7), np.uint8)
 
 #Capturing the WebCam
 vid = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -31,6 +44,7 @@ vid = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 while (True):
     #Reading current frame
     ret, frame= vid.read()
+    h,w=frame.shape[:2]
 
     #Converting frame to HSV Format
     hsv=cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -43,6 +57,7 @@ while (True):
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
     mask = cv2.erode(mask, kernel, iterations=1)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
     #Bitwise-And to the regular frame and the mask to show only the colour that we're capturing
@@ -58,6 +73,7 @@ while (True):
 
     #Exploring the contour
     for pic, contour in enumerate(contours): 
+
         #Finding area of each contour
         area = cv2.contourArea(contour) 
 
@@ -77,13 +93,50 @@ while (True):
             radius = int(radius)
             cv2.circle(frame,center,radius,(0,255,0),2)
 
+            ''' 
+            frame = cv2.rectangle(frame, (xr, yr),  
+                                       (xr + wr, yr + hr),  
+                                       (255, 0, ), 2) 
+            '''
+
+            #Splitting into Left and Right on the basis of centroid of Arrow
+            left=mask[0:h, 0:int(x)]
+            right=mask[0:h, int(x):w]
+            arealeft=int()
+            arearight=int()
+
+            '''
+            xr, yr, wr, hr = cv2.boundingRect(contour)
+            vid_arrow=mask[yr:yr+hr,xr:xr+wr]
+            cv2.imshow("",vid_arrow)
+            ccnt,h = cv2.findContours(vid_arrow,2,1)
+            vid_arrow=ccnt[0]
+            '''
+
+            #Finding area of contours on left and right side
+            lc, lh = cv2.findContours(left, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            rc, rh = cv2.findContours(right, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            for lp, lcnt in enumerate(lc):
+                arealeft=cv2.contourArea(lcnt)
+            for rp, rcnt in enumerate(rc):
+                arearight=cv2.contourArea(rcnt)
+            
             #Imagining an Elipse around the contour to find its center and its angle
             cords,axes,angle = cv2.fitEllipse(contour)
-            x,y=cords[:2]
-            x,y=int(x),int(y)
+            x0,y0=cords[:2]
+            x0,y0=int(x0),int(y0)
+
+            #Angle Correction
+            if arealeft>(arearight):
+                angle+=180
 
             #Writing angle on the center of the Arrow
-            cv2.putText(frame, f"A={int(angle)}",(x,y), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
+            cv2.putText(frame, f"A={int(angle)}",(x0,y0), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255))
+
+            '''
+            rett = cv2.matchShapes(arrow_template,vid_arrow,1,0.0)
+            print(rett)
+            '''
 
             '''
             print(f"X={cords[0]}\nY={cords[1]}\nAngle={angle}\n")
@@ -99,25 +152,23 @@ while (True):
             cv2.putText(frame, f"RY={righty}",(x,y+40), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 0))
             #frame = cv2.line(frame,(cols-1,righty),(0,lefty),(0,255,0),2)
             '''
-
-            '''
-            x, y, w, h = cv2.boundingRect(contour) 
-            frame = cv2.rectangle(frame, (x, y),  
-                                       (x + w, y + h),  
-                                       (255, 0, ), 2) 
             
-            cv2.putText(frame, "Arrow", (x, y), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1.0, 
-                        (255, 255, 0))
-            '''
     #Showing the final video, the mask, and the coloured mask       
     try:
-        cv2.imshow('Video',frame)
         cv2.imshow('Mask',mask)
         cv2.imshow('Colour',res)
+        cv2.imshow('Video',frame)
     #Try|Except block because an error crashed my laptop, so I'm saving you
     except:
         print("ERROR")
+    '''
+    else:
+        try:
+            cv2.imshow("Left",left)
+            cv2.imshow("Right",right)
+        except:
+            pass
+    '''
 
     #Condition for Exiting Video on pressing the 'Q' Key
     if cv2.waitKey(1) & 0xFF == ord('q'): 
