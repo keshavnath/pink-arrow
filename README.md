@@ -1,5 +1,4 @@
-# uas-rec
-My Repository for the UAS Software Recruitment Task
+# Angle of a Pink Arrow
 
 **Python-OpenCV Script to detect a _Red Arrow_ from the webcam feed, and determine the angle from the vertical.**
 
@@ -9,7 +8,7 @@ Three videos will be visible:- Frame (Final Result with Circle and Angle), Mask 
 
 Make sure Arrow is red (most shades can be detected perfectly), and try to ensure that the Webcam does not auto-focus some other object (like faces) as it can cause color change
 
-_Script.py is well-documented with comments. All lines and segments of code have been explained._
+_Script.py is the main file and is well-documented with comments. All lines and segments of code have been explained._
 
 > Uses Contours and HSV-Masks to detect Red Arrows.
 
@@ -19,5 +18,4 @@ _Script.py is well-documented with comments. All lines and segments of code have
 
 > Draws a circle around the arrow and shows Angle from vertical.
 
-
-_OBSOLETE_ - practice1.py -> Practice of rotation and scaling of a template/image
+Example:
